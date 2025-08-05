@@ -1,0 +1,15 @@
+@import 'reset.css';
+
+@import 'variables.css';
+
+h1, h2, h3 {
+    font-family: var(--font-family-primary);
+}
+
+body, p, span, div {
+    font-family: var(--font-family-secondary);
+}
+
+@import 'layout.css';
+
+@import 'responsive.css';

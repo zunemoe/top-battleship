@@ -1,0 +1,38 @@
+:root {
+    /* Color Variables */
+    --color-white: #ffffff;
+    --color-black: #000000;
+
+    /* Font Variables */
+    --font-family-primary: 'Playfair Display', serif;
+    --font-family-secondary: 'Inter', sans-serif;
+    --font-size-xl: 36px;
+    --font-size-l: 30px;
+    --font-size-m: 24px;
+    --font-size-s: 16px;
+    --font-size-xs: 14px;
+    --font-weight-bold: 700;
+    --font-weight-normal: 400;
+    --font-weight-light: 300;
+    --line-height-base: 1.5;
+    --letter-spacing-wide: 0.05rem;
+    --letter-spacing-tight: -0.01rem;
+
+    /* Margins, Paddings Variables */
+    --spacing-l: 32px;
+    --spacing-m: 24px;
+    --spacing-s: 16px;
+    --spacing-xs: 8px;
+
+    /* Z-Index Layers */
+
+    /* Interaction / States */
+    --transition-fast: all 0.2s ease-in-out;
+    --transition-slow: all 0.5s ease-in-out;
+    --hover-brightness: 1.2;
+    --hover-brightness-dark: 0.9;
+
+    /* Miscellaneous Variables */
+    --border-radius: 8px;
+    --box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
