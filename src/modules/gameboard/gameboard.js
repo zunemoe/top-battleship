@@ -35,29 +35,58 @@ export function Gameboard() {
         }
 
         // Check for overlapping ships    
-        
+        for (let i = 0; i < ship.length; i++) {
+            const checkX = orientation === 'vertical' ? x + i : x;
+            const checkY = orientation === 'horizontal' ? y + i : y;
+
+            if (grid[checkX][checkY] !== null) throw new Error('Ships cannot overlap');
+        }
+
         // Place the ship
+        for (let i = 0; i < ship.length; i++) {
+            const placeX = orientation === 'vertical' ? x + i : x;
+            const placeY = orientation === 'horizontal' ? y + i : y;
+
+            grid[placeX][placeY] = ship;
+        }
+
+        // Add ship to the ships array for tracking
+        ships.push(ship);
     }
 
     // Attack Coordination
     const receiveAttack = (x, y) => {
         // Validate bounds
+        if (!isValidCoordinate(x, y)) throw new Error('Attack coordinates out of bounds');
 
         // Check for duplicate attack
+        const coordKey = coordinateKey(x, y);
+        if (attackedCoordinates.has(coordKey)) return 'already attacked';
 
         // Mark as attacked
+        attackedCoordinates.add(coordKey);
 
         // Check if hit
+        const ship = grid[x][y];
+        if (ship === null) return 'miss';
 
         // Hit the ship
+        ship.hit();
 
         // Check if sunk
+        if (ship.isSunk()) {
+            return 'sunk';
+        }
+
+        return 'hit';
     }
 
     const allShipsSunk = () => {
+        return ships.length > 0 && ships.every(ship => ship.isSunk());
     }
 
-    const isAttacked = (row, col) => {
+    const isAttacked = (x, y) => {
+        return attackedCoordinates.has(coordinateKey(x, y));
     }
 
     // Game State

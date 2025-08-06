@@ -45,15 +45,15 @@ describe('Gameboard Factory:', () => {
 
     test('prevents ship placement out of bounds', () => {
       const ship = Ship(3);
-      expect(gameboard.placeShip(ship, 8, 8, 'horizontal')).toThrow('Ship placement out of bounds');
-      expect(gameboard.placeShip(ship, 8, 8, 'vertical')).toThrow('Ship placement out of bounds');
+      expect(() => gameboard.placeShip(ship, 8, 8, 'horizontal')).toThrow('Ship placement out of bounds');
+      expect(() => gameboard.placeShip(ship, 8, 8, 'vertical')).toThrow('Ship placement out of bounds');
     });
 
     test('prevents overlapping ship placement', () => {
       const ship1 = Ship(3);
       const ship2 = Ship(3);
       gameboard.placeShip(ship1, 0, 0, 'horizontal');
-      expect(gameboard.placeShip(ship2, 0, 0, 'vertical')).toThrow('Ships cannot overlap');
+      expect(() => gameboard.placeShip(ship2, 0, 0, 'vertical')).toThrow('Ships cannot overlap');
     });
   });
 
@@ -84,8 +84,8 @@ describe('Gameboard Factory:', () => {
     });
 
     test('throws error for out of bounds attack', () => {
-      expect(gameboard.receiveAttack(-1, 0)).toThrow('Attack out of bounds');
-      expect(gameboard.receiveAttack(10, 10)).toThrow('Attack out of bounds');
+      expect(() => gameboard.receiveAttack(-1, 0)).toThrow('Attack coordinates out of bounds');
+      expect(() => gameboard.receiveAttack(10, 10)).toThrow('Attack coordinates out of bounds');
     });
   });
 
@@ -106,12 +106,12 @@ describe('Gameboard Factory:', () => {
       gameboard.receiveAttack(0, 0);
       gameboard.receiveAttack(0, 1);
       gameboard.receiveAttack(1, 1);
-      gameboard.receiveAttack(1, 2);
+      gameboard.receiveAttack(2, 1);
 
       expect(gameboard.allShipsSunk()).toBe(true);
     });
 
-    test('tracks attached coordinates', () => {
+    test('tracks attacked coordinates', () => {
       gameboard.receiveAttack(0, 0);
       gameboard.receiveAttack(0, 1);
 

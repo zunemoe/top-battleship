@@ -40,17 +40,17 @@ A step-by-step development roadmap using TDD, modular architecture, and Webpack.
 ## TDD Module Development
 
 ### Ship Module
-- [ ] Write tests for ship creation
-- [ ] Implement `Ship` factory function
+- [x] Write tests for ship creation
+- [x] Implement `Ship` factory function
 - [ ] Add styles in `ship.css`
 
 ### Gameboard Module
-- [ ] Write tests for placing ships and receiving attacks
-- [ ] Implement Gameboard logic
+- [x] Write tests for placing ships and receiving attacks
+- [x] Implement Gameboard logic
 - [ ] Add styles in `gameboard.css`
 
 ### Player Module
-- [ ] Write tests for player actions
+- [x] Write tests for player actions
 - [ ] Implement Player factory (human/computer)
 - [ ] Add styles in `player.css`
 
