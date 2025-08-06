@@ -19,10 +19,8 @@ export function Gameboard() {
     const coordinateKey = (x, y) => `${x},${y}`;
 
     // Public methods
-    // Grid Creation
     const getGridSize = () => GRID_SIZE;
 
-    // Ship Placement
     const getShipAt = (x, y) => {
         if (!isValidCoordinate(x, y)) return null;
         return grid[x][y];
@@ -36,10 +34,31 @@ export function Gameboard() {
             if (x + ship.length > GRID_SIZE) throw new Error('Ship placement out of bounds');
         }
 
-        // Check for overlapping ships        
+        // Check for overlapping ships    
+        
+        // Place the ship
     }
 
     // Attack Coordination
+    const receiveAttack = (x, y) => {
+        // Validate bounds
+
+        // Check for duplicate attack
+
+        // Mark as attacked
+
+        // Check if hit
+
+        // Hit the ship
+
+        // Check if sunk
+    }
+
+    const allShipsSunk = () => {
+    }
+
+    const isAttacked = (row, col) => {
+    }
 
     // Game State
     return {
