@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest",
-    "watch": "jest --watch",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
+    "watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --verbose",
     "build": "webpack",
     "start": "webpack serve --open"
   },
@@ -22,6 +23,7 @@
     "@types/jest": "^30.0.0",
     "babel-jest": "^30.0.5",
     "babel-loader": "^10.0.0",
+    "cross-env": "^10.0.0",
     "css-loader": "^7.1.2",
     "eslint-plugin-jest": "^29.0.1",
     "html-loader": "^5.1.0",
@@ -35,8 +37,12 @@
     "webpack-dev-server": "^5.2.2"
   },
   "jest": {
+    "globals": {
+      "jest": true
+    },
     "transform": {
       "^.+\\.js$": "babel-jest"
-    }
+    },
+    "testEnvironment": "node"
   }
 }
