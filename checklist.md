@@ -51,7 +51,7 @@ A step-by-step development roadmap using TDD, modular architecture, and Webpack.
 
 ### Player Module
 - [x] Write tests for player actions
-- [ ] Implement Player factory (human/computer)
+- [x] Implement Player factory (human/computer)
 - [ ] Add styles in `player.css`
 
 ### Game Logic

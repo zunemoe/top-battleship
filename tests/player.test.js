@@ -108,10 +108,10 @@ describe('Player Factory:', () => {
 
       const nextAttack = player.generateAttack(gameboard);
       const surroundingCells = [
-        { x: 5, y: 4 }, // Left
-        { x: 5, y: 6 }, // Right
         { x: 4, y: 5 }, // Up
-        { x: 6, y: 5 }  // Down
+        { x: 6, y: 5 },  // Down
+        { x: 5, y: 4 }, // Left
+        { x: 5, y: 6 } // Right
       ];
 
       const isTargetingSurrounding = surroundingCells.some(cell => cell.x === nextAttack.x && cell.y === nextAttack.y);

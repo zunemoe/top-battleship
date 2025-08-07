@@ -5,8 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --verbose",
-    "watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --verbose",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --no-coverage",
+    "test:verbose": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --verbose --no-coverage",
+    "watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --verbose --no-coverage",
+    "watch:verbose": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --verbose",
     "build": "webpack",
     "start": "webpack serve --open"
   },
@@ -40,9 +42,8 @@
     "globals": {
       "jest": true
     },
-    "transform": {
-      "^.+\\.js$": "babel-jest"
-    },
-    "testEnvironment": "node"
+    "transform": { "^.+\\.js$": "babel-jest" },
+    "testEnvironment": "node",
+    "collectCoverage": false
   }
 }
