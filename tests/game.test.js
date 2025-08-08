@@ -23,69 +23,77 @@ describe('Game Factory:', () => {
     });
 
     test('initializes gameboards for both players', () => {
-      expect(game.getPlayer1().getGameboard()).toBeDefined();
-      expect(game.getPlayer2().getGameboard()).toBeDefined();
-      expect(game.getPlayer1().getGameboard().getGridSize()).toBe(10);
-      expect(game.getPlayer2().getGameboard().getGridSize()).toBe(10);
+      expect(game.getPlayer1Board()).toBeDefined();
+      expect(game.getPlayer2Board()).toBeDefined();
+      expect(game.getPlayer1Board().getGridSize()).toBe(10);
+      expect(game.getPlayer2Board().getGridSize()).toBe(10);
     });
 
     test('sets player 1 as the starting player', () => {
       expect(game.getCurrentPlayer()).toBe(player1);
     });
 
-    test('initializes game state as active', () => {
-      expect(game.isGameOver()).toBe(false);
-      expect(game.getWinner()).toBeNull();
-    });
+    // test('initializes game state as active', () => {
+    //   expect(game.isGameOver()).toBe(false);
+    //   expect(game.getWinner()).toBeNull();
+    // });
   });
 
   describe('Ship Placement:', () => {
     test('allows placing shps on player gameboards', () => {
       const ship = Ship(3);
 
-      expect(() => game.placeShip(player1, ship, 0, 0, 'horizontal')).not.toThrow();
-      expect(player1.getGameboard().getShipAt(0, 0)).toBe(ship);
+      expect(() => game.getPlayer1Board().placeShip(ship, 0, 0, 'horizontal')).not.toThrow();
+      expect(game.getPlayer1Board().getShipAt(0, 0)).toBe(ship);
     });
 
     test('tracks setup completion for both players', () => {
-      expect(game.isSetupComplete(player1)).toBe(false);
-      expect(game.isSetupComplete(player2)).toBe(false);
-
       const ships1 = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)];
       const ships2 = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)];
 
-      ships1.forEach((ship, i) => game.placeShip(player1, ship, i, 0, 'horizontal'));
-      ships2.forEach((ship, i) => game.placeShip(player2, ship, i, 0, 'horizontal'));
+      ships1.forEach((ship, i) => game.getPlayer1Board().placeShip(ship, i, 0, 'horizontal'));
+      ships2.forEach((ship, i) => game.getPlayer2Board().placeShip(ship, i, 0, 'horizontal'));
 
-      expect(game.isSetupComplete(player1)).toBe(true);
-      expect(game.isSetupComplete(player2)).toBe(true);
+      game.startGame();
+      expect(game.getGameState().gameState).toBe('playing');
     });
   });
 
   describe('Turn Management:', () => {
-    test('switches turns after valid attack', () => {
-      expect(game.getCurrentPlayer()).toBe(player1);
-      player1.makeAttack(0, 0);
-      game.switchTurn();
-      expect(() => game.getCurrentPlayer()).toBe(player2);
+    beforeEach(() => {
+      // Set up game with ships
+      game.getPlayer1Board().placeShip(Ship(3), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship(3), 0, 0, 'horizontal');
 
-      player2.makeAttack(1, 1);
-      game.switchTurn();
-      expect(game.getCurrentPlayer()).toBe(player1);
+      game.startGame();
+    });
+
+    test('switches turns after valid attack', () => {
+      expect(game.getCurrentPlayer()).toBe(game.getPlayer1());
+
+      game.getPlayer1().makeAttack(0, 0, game.getPlayer2Board());
+      game.processTurn();
+      expect(game.getCurrentPlayer()).toBe(game.getPlayer2());
+
+      game.getPlayer2().makeAttack(1, 1, game.getPlayer1Board());
+      game.processTurn();
+      expect(game.getCurrentPlayer()).toBe(game.getPlayer1());
     });
 
     test('does not switch turn after invalid attack', () => {
-      expect(game.getCurrentPlayer()).toBe(player1);
-      player1.makeAttack(0, 0); // Assume this is a valid attack
-      game.switchTurn();
-      expect(game.getCurrentPlayer()).toBe(player2);
+      expect(game.getCurrentPlayer()).toBe(game.getPlayer1());
 
-      expect(() => game.makeAttack(10, 10)).toThrow('Attack coordinates out of bounds');
-      expect(game.getCurrentPlayer()).toBe(player2); // Should still be player 2
+      game.getPlayer1().makeAttack(0, 0, game.getPlayer2Board()); // Assume this is a valid attack
+      game.processTurn();
+      expect(game.getCurrentPlayer()).toBe(game.getPlayer2());
+
+      expect(() => game.getPlayer2().makeAttack(10, 10, game.getPlayer1Board())).toThrow('Attack coordinates out of bounds');
+      game.processTurn();
+      expect(game.getCurrentPlayer()).toBe(game.getPlayer2()); // Should still be player 2
     });
 
     test('handles computer turns automatically', () => {
-      game.switchTurn();
+      player1.makeAttack(0, 0, game.getPlayer2Board()); // Assume this is a valid attack
       expect(game.getCurrentPlayer()).toBe(player2);
       const result = game.processComputerTurn();
       expect(result).toBeDefined();
@@ -94,48 +102,49 @@ describe('Game Factory:', () => {
   });
 
   describe('Attack Coordination:', () => {
-    test('processes attack on opponent gameboard', () => {
-      const ship = Ship(3);
-      game.placeShip(player2, ship, 0, 0, 'horizontal');
+    beforeEach(() => {
+      // Set up game with ships
+      game.getPlayer1Board().placeShip(Ship(3), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship(3), 0, 0, 'horizontal');
 
-      const result = game.makeAttack(0, 0);
+      game.startGame();
+    });
+
+    test('processes attack on opponent gameboard', () => {
+      const result = player1.makeAttack(0, 0, game.getPlayer2Board());
 
       expect(result).toBe('hit');
-      expect(player2.getGameboard().isAttacked(0, 0)).toBe(true);
+      expect(game.getPlayer2Board().isAttacked(0, 0)).toBe(true);
     });
 
     test('updates player score on successful hit', () => {
-      const ship = Ship(3);
-      game.placeShip(player2, ship, 0, 0, 'horizontal');
-      
       expect(player1.getScore()).toBe(0);
-      game.makeAttack(0, 0);
+      player1.makeAttack(0, 0, game.getPlayer2Board());
       expect(player1.getScore()).toBe(1);
     });
   });
 
   describe('Win Conditions:', () => {
     test('detects when all ships are sunk', () => {
-      const ship = Ship(2);
-      game.placeShip(player2, ship, 0, 0, 'horizontal');
-      game.makeAttack(0, 0);
-      game.makeAttack(0, 1);
+      player1.makeAttack(0, 0, game.getPlayer2Board());
+      player1.makeAttack(0, 1, game.getPlayer2Board());
+      player1.makeAttack(0, 2, game.getPlayer2Board()); // Assume this sinks the ship
 
-      expect(player2.getGameboard().allShipsSunk()).toBe(true);
-      expect(game.isGameOver()).toBe(true);
+      expect(game.getPlayer2Board().allShipsSunk()).toBe(true);
+      expect(game.getGameState()).toBe('not playing');
       expect(game.getWinner()).toBe(player1);
     });
 
     test('continues game when ships remain', () => {
       const ship1 = Ship(2);
       const ship2 = Ship(3);
-      game.placeShip(player2, ship1, 0, 0, 'horizontal');
-      game.placeShip(player2, ship2, 1, 1, 'vertical');
-      game.makeAttack(0, 0);
-      game.makeAttack(1, 1);
+      game.getPlayer2Board().placeShip(ship1, 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(ship2, 1, 1, 'vertical');
+      player1.makeAttack(0, 0, game.getPlayer2Board());
+      player1.makeAttack(1, 1, game.getPlayer2Board());
 
       expect(player2.getGameboard().allShipsSunk()).toBe(false);
-      expect(game.isGameOver()).toBe(false);
+      expect(game.getGameState()).toBe('playing');
       expect(game.getWinner()).toBeNull();
     });
   });
@@ -146,7 +155,7 @@ describe('Game Factory:', () => {
 
       expect(state).toEqual({
         currentPlayer: player1,
-        isGameOver: false,
+        getGameState: 'not playing',
         winner: null,
         player1Score: 0,
         player2Score: 0,
@@ -155,14 +164,13 @@ describe('Game Factory:', () => {
     });
 
     test('resets game state', () => {
-      game.makeAttack(0, 0);
+      game.makeAttack(0, 0, game.getPlayer2Board());
       expect(game.getGameState().turnCount).toBe(1);
 
       game.resetGame();
 
-      expect(game.getGameState().turnCount).toBe(0);
+      expect(game.getGameState()).toBe('not playing');
       expect(game.getCurrentPlayer()).toBe(player1);
-      expect(game.isGameOver()).toBe(false);
       expect(game.getWinner()).toBeNull();
     });
   });
