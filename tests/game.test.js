@@ -30,7 +30,7 @@ describe('Game Factory:', () => {
     });
 
     test('sets player 1 as the starting player', () => {
-      expect(game.getCurrentPlayer()).toBe(player1);
+      expect(game.getGameState().currentPlayer).toBe(player1);
     });
 
     // test('initializes game state as active', () => {
@@ -69,35 +69,23 @@ describe('Game Factory:', () => {
     });
 
     test('switches turns after valid attack', () => {
-      expect(game.getCurrentPlayer()).toBe(game.getPlayer1());
+      expect(game.getGameState().currentPlayer).toBe(game.getPlayer1());
+      
+      game.makeGameAttack(0, 0);
+      expect(game.getGameState().currentPlayer).toBe(game.getPlayer2());
 
-      game.getPlayer1().makeAttack(0, 0, game.getPlayer2Board());
-      game.processTurn();
-      expect(game.getCurrentPlayer()).toBe(game.getPlayer2());
-
-      game.getPlayer2().makeAttack(1, 1, game.getPlayer1Board());
-      game.processTurn();
-      expect(game.getCurrentPlayer()).toBe(game.getPlayer1());
+      game.makeGameAttack(1, 1);
+      expect(game.getGameState().currentPlayer).toBe(game.getPlayer1());
     });
 
     test('does not switch turn after invalid attack', () => {
-      expect(game.getCurrentPlayer()).toBe(game.getPlayer1());
+      expect(game.getGameState().currentPlayer).toBe(game.getPlayer1());
 
-      game.getPlayer1().makeAttack(0, 0, game.getPlayer2Board()); // Assume this is a valid attack
-      game.processTurn();
-      expect(game.getCurrentPlayer()).toBe(game.getPlayer2());
+      game.makeGameAttack(0, 0);
+      expect(game.getGameState().currentPlayer).toBe(game.getPlayer2());
 
-      expect(() => game.getPlayer2().makeAttack(10, 10, game.getPlayer1Board())).toThrow('Attack coordinates out of bounds');
-      game.processTurn();
-      expect(game.getCurrentPlayer()).toBe(game.getPlayer2()); // Should still be player 2
-    });
-
-    test('handles computer turns automatically', () => {
-      player1.makeAttack(0, 0, game.getPlayer2Board()); // Assume this is a valid attack
-      expect(game.getCurrentPlayer()).toBe(player2);
-      const result = game.processComputerTurn();
-      expect(result).toBeDefined();
-      expect(game.getCurrentPlayer()).toBe(player1); // Should switch back to player 1
+      expect(() => game.makeGameAttack(10, 10)).toThrow('Attack coordinates out of bounds');
+      expect(game.getGameState().currentPlayer).toBe(game.getPlayer2()); // Should still be player 2
     });
   });
 
@@ -111,51 +99,64 @@ describe('Game Factory:', () => {
     });
 
     test('processes attack on opponent gameboard', () => {
-      const result = player1.makeAttack(0, 0, game.getPlayer2Board());
+      const result = game.makeGameAttack(0, 0);
 
       expect(result).toBe('hit');
       expect(game.getPlayer2Board().isAttacked(0, 0)).toBe(true);
     });
 
     test('updates player score on successful hit', () => {
-      expect(player1.getScore()).toBe(0);
-      player1.makeAttack(0, 0, game.getPlayer2Board());
-      expect(player1.getScore()).toBe(1);
+      expect(player1.score).toBe(0);
+      game.makeGameAttack(0, 0);
+      expect(player1.score).toBe(1);
     });
   });
 
   describe('Win Conditions:', () => {
+    beforeEach(() => {
+      // Set up game with ships
+      game.getPlayer1Board().placeShip(Ship(2), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship(2), 0, 0, 'horizontal');
+
+      game.startGame();
+    });
+
     test('detects when all ships are sunk', () => {
-      player1.makeAttack(0, 0, game.getPlayer2Board());
-      player1.makeAttack(0, 1, game.getPlayer2Board());
-      player1.makeAttack(0, 2, game.getPlayer2Board()); // Assume this sinks the ship
+      game.makeGameAttack(0, 0); // Player 1 attacks
+      game.makeGameAttack(0, 0); // Player 2 attacks
+      game.makeGameAttack(0, 1); // Player 1 attacks and sinks ship
 
       expect(game.getPlayer2Board().allShipsSunk()).toBe(true);
-      expect(game.getGameState()).toBe('not playing');
-      expect(game.getWinner()).toBe(player1);
+      expect(game.getGameState().gameState).toBe('not playing');
+      expect(game.getGameState().winner).toBe(player1);
     });
 
     test('continues game when ships remain', () => {
-      const ship1 = Ship(2);
-      const ship2 = Ship(3);
-      game.getPlayer2Board().placeShip(ship1, 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(ship2, 1, 1, 'vertical');
-      player1.makeAttack(0, 0, game.getPlayer2Board());
-      player1.makeAttack(1, 1, game.getPlayer2Board());
+      game.makeGameAttack(0, 0); // Player 1 attacks
+      game.makeGameAttack(0, 1); // Player 2 attacks      
 
-      expect(player2.getGameboard().allShipsSunk()).toBe(false);
-      expect(game.getGameState()).toBe('playing');
-      expect(game.getWinner()).toBeNull();
+      expect(game.getPlayer1Board().allShipsSunk()).toBe(false);
+      expect(game.getPlayer2Board().allShipsSunk()).toBe(false);
+      expect(game.getGameState().gameState).toBe('playing');
+      expect(game.getGameState().winner).toBeNull();
     });
   });
 
   describe('Game State Management:', () => {
+    beforeEach(() => {
+      // Set up game with ships
+      game.getPlayer1Board().placeShip(Ship(2), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship(2), 0, 0, 'horizontal');
+
+      game.startGame();
+    });
+
     test('provides game state summary', () => {
       const state = game.getGameState();
 
       expect(state).toEqual({
         currentPlayer: player1,
-        getGameState: 'not playing',
+        gameState: 'playing',
         winner: null,
         player1Score: 0,
         player2Score: 0,
@@ -164,14 +165,14 @@ describe('Game Factory:', () => {
     });
 
     test('resets game state', () => {
-      game.makeAttack(0, 0, game.getPlayer2Board());
+      game.makeGameAttack(0, 0);
       expect(game.getGameState().turnCount).toBe(1);
 
       game.resetGame();
 
-      expect(game.getGameState()).toBe('not playing');
-      expect(game.getCurrentPlayer()).toBe(player1);
-      expect(game.getWinner()).toBeNull();
+      expect(game.getGameState().gameState).toBe('not playing');
+      expect(game.getGameState().currentPlayer).toBe(player1);
+      expect(game.getGameState().winner).toBeNull();
     });
   });
 });

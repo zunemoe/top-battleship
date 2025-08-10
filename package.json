@@ -7,7 +7,7 @@
   "scripts": {
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --no-coverage",
     "test:verbose": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --verbose --no-coverage",
-    "watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch",
+    "watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --no-coverage",
     "watch:verbose": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --verbose",
     "build": "webpack",
     "start": "webpack serve --open"

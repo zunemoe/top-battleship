@@ -66,31 +66,26 @@ export function Game(player1, player2) {
         };
     };
 
-    const processGameTurn = () => {
+    const makeGameAttack = (x, y) => {
         if (gameState !== 'playing') throw new Error('Game is not currently playing');
 
-        if (currentPlayer.type === 'computer') return processComputerTurn();
-        else if (currentPlayer.type === 'human') return processHumanTurn();
-    };
+        const opponentBoard = currentPlayer === player1 ? player2Board : player1Board;
+        const result = currentPlayer.makeAttack(x, y, opponentBoard);
 
-    const processComputerTurn = () => {
+        checkWinCondition();
+        gameState === 'playing' && switchTurns();
+
+        return result;
+    }
+
+    const generateComputerAttack = () => {
         if (currentPlayer.type !== 'computer') throw new Error('Current player is not a computer');
 
         const gameboard = player1Board;
         const { x, y } = currentPlayer.generateAttack(gameboard);
-        const result = currentPlayer.makeAttack(x, y, gameboard);
-
-        checkWinCondition();
-
-        gameState === 'playing' && switchTurns();
-
-        return result;
+        
+        return makeGameAttack(x, y);
     };
-
-    const processTurn = () => {
-        checkWinCondition();
-        gameState === 'playing' && switchTurns();
-    }
 
     const resetGame = () => {
         gameState = 'not playing';
@@ -106,12 +101,10 @@ export function Game(player1, player2) {
         getPlayer2,
         getPlayer1Board,
         getPlayer2Board,
-        getCurrentPlayer,
-        getWinner,
         startGame,
         getGameState,
-        processComputerTurn,
-        processTurn,
+        generateComputerAttack,
+        makeGameAttack,
         resetGame
     };
 }

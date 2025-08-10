@@ -55,8 +55,8 @@ A step-by-step development roadmap using TDD, modular architecture, and Webpack.
 - [ ] Add styles in `player.css`
 
 ### Game Logic
-- [ ] Write integration tests for game flow
-- [ ] Implement core game loop
+- [x] Write integration tests for game flow
+- [x] Implement core game loop
 - [ ] Style game screen
 
 ---
