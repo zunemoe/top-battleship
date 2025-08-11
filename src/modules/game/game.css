@@ -1,6 +1,13 @@
+#game-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr auto;
+}
+
 .game-header {
+    grid-column: span 2;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     padding: 20px;
     background-color: #f0f0f0;
@@ -32,13 +39,15 @@
 
 .game-boards {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     padding: 20px;
     gap: 40px;
 }
 
 .board-container {
     text-align: center;
+    width: 35%;
+    aspect-ratio: 1;
 }
 
 .board-container h4 {
@@ -47,6 +56,11 @@
 }
 
 .game-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     text-align: center;
     padding: 20px;
 }
@@ -69,4 +83,8 @@
 .game-controls button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+.ship-inventory {
+    grid-column: span 2;
 }

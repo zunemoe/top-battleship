@@ -145,9 +145,9 @@ export function Game(player1, player2) {
                 </div>
             </div>
             <div class="game-controls">
-                <button id="start-game">Start Game</button>
-                <button id="reset-game">Reset Game</button>
-                <button id="rotate-ship">Rotate Ship</button>
+                <button id="start-game"><span class="material-symbols-outlined">play_arrow</span></button>
+                <button id="reset-game"><span class="material-symbols-outlined">laps</span></button>
+                <button id="rotate-ship"><span class="material-symbols-outlined">cached</span></button>
             </div>
             <div class="ship-inventory">
                 <h4>Available Ships</h4>

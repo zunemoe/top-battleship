@@ -1,3 +1,9 @@
+/* #player1-board,
+#player2-board {
+    width: 80%;
+    aspect-ratio: 1;
+} */
+
 .gameboard-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
