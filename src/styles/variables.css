@@ -1,5 +1,10 @@
 :root {
     /* Color Variables */
+    --color-red: #EF476F;
+    --color-yellow: #FFD166;
+    --color-green: #06D6A0;
+    --color-blue-light: #118AB2;
+    --color-blue-dark: #073B4C;
     --color-white: #ffffff;
     --color-black: #000000;
 

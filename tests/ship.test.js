@@ -1,7 +1,7 @@
 // <reference types="jest" />
 // Jest test for the ship module
 
-import { Ship } from '../src/modules/ship/ship';
+import { Ship } from '../src/modules/ship/ship.js';
 
 describe('Ship Factory:', () => {
   test('creates a ship with a given length', () => {

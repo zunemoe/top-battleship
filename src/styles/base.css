@@ -12,4 +12,8 @@ body, p, span, div {
 
 @import 'layout.css';
 
+@import '../modules/game/game.css';
+@import '../modules/ship/ship.css';
+@import '../modules/gameboard/gameboard.css';
+
 @import 'responsive.css';

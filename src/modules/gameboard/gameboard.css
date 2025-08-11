@@ -1,0 +1,61 @@
+.gameboard-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 1px;
+    border: 2px solid #000;
+    max-width: 400px;
+    aspect-ratio: 1;
+}
+
+.grid-cell {
+    background-color: white;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+#player1-board .grid-cell.has-ship.ship-carrier {
+    background-color: var(--color-red);
+}
+
+#player1-board .grid-cell.has-ship.ship-battleship {
+    background-color: var(--color-yellow);
+}
+
+#player1-board .grid-cell.has-ship.ship-cruiser {
+    background-color: var(--color-green);
+}
+
+#player1-board .grid-cell.has-ship.ship-submarine {
+    background-color: var(--color-blue-light);
+}
+
+#player1-board .grid-cell.has-ship.ship-destroyer {
+    background-color: var(--color-blue-dark);
+}
+
+.grid-cell.hit {
+    background-color: var(--color-red);
+}
+
+.grid-cell.miss {
+    background-color: lightblue;
+}
+
+.grid-cell.sunk {
+    border: 3px solid #222 !important;
+}
+
+/* 
+.opponent-board .grid-cell:hover {
+    background-color: var(--color-green-dark);
+}
+
+.gameboard-grid.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+} */
+

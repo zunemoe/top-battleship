@@ -1,8 +1,8 @@
 // <reference types="jest" />
 // Jest test for the gameboard module
 
-import { Gameboard } from '../src/modules/gameboard/gameboard';
-import { Ship } from '../src/modules/ship/ship';
+import { Gameboard } from '../src/modules/gameboard/gameboard.js';
+import { Ship } from '../src/modules/ship/ship.js';
 
 describe('Gameboard Factory:', () => {
   let gameboard;

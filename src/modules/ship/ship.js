@@ -1,6 +1,9 @@
-export function Ship(length) {
-    // Input validation
-    if (length <= 0) throw new Error('Invalid ship length');
+import { SHIP_TYPES } from '../../utils/constants.js';
+
+export function Ship(typeKey) {
+    const type = SHIP_TYPES[typeKey];
+    if (!type) throw new Error(`Invalid ship type: ${typeKey}`);
+    const length = type.length;    
 
     // Private state
     let hits = 0;
@@ -19,6 +22,9 @@ export function Ship(length) {
 
     // Return the public API
     return {
+        type: typeKey,
+        name: type.name,
+        color: type.color,
         length,
         hit,
         isSunk,

@@ -1,9 +1,9 @@
 // <reference types="jest" />
 // Jest test for the player module
 
-import { Player } from '../src/modules/player/player';
-import { Gameboard } from '../src/modules/gameboard/gameboard';
-import { Ship } from '../src/modules/ship/ship';
+import { Player } from '../src/modules/player/player.js';
+import { Gameboard } from '../src/modules/gameboard/gameboard.js';
+import { Ship } from '../src/modules/ship/ship.js';
 
 describe('Player Factory:', () => {
   let gameboard;
