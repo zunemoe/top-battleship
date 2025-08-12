@@ -122,6 +122,11 @@ export function Gameboard() {
                 cell.dataset.col = col;
 
                 if (!playerBoard) cell.addEventListener('click', handleCellClick);
+                else {
+                    cell.addEventListener('click', handleShipPlacement);
+                    cell.addEventListener('mouseenter', handleCellHover);
+                    cell.addEventListener('mouseleave', handleCellLeave);
+                }
 
                 gridElement.appendChild(cell);
             }
@@ -130,6 +135,87 @@ export function Gameboard() {
         container.appendChild(gridElement);
         updateDisplay();
         return gridElement;
+    };
+
+    const handleShipPlacement = (event) => {
+        const row = parseInt(event.target.dataset.row);
+        const col = parseInt(event.target.dataset.col);
+
+        const placementEvent = new CustomEvent('shipPlacement', {
+            detail: {
+                row,
+                col,
+                gameboard: getGameboardReference(),
+                boardElement: gridElement,
+            }
+        });
+        document.dispatchEvent(placementEvent);
+    };
+
+    const handleCellHover = (event) => {
+        const row = parseInt(event.target.dataset.row);
+        const col = parseInt(event.target.dataset.col);
+
+        const hoverEvent = new CustomEvent('boardHover', {
+            detail: {
+                row,
+                col,
+                gameboard: getGameboardReference(),
+                boardElement: gridElement,                
+            }
+        });
+        document.dispatchEvent(hoverEvent);
+    };
+
+    const handleCellLeave = (event) => {
+        const row = parseInt(event.target.dataset.row);
+        const col = parseInt(event.target.dataset.col);
+
+        const leaveEvent = new CustomEvent('boardLeave', {
+            detail: {
+                row,
+                col,
+                gameboard: getGameboardReference(),
+                boardElement: gridElement,                
+            }
+        });
+        document.dispatchEvent(leaveEvent);
+    };
+
+    const getGameboardReference = () => {
+        return {
+            getGridSize,
+            getShipAt,
+            placeShip,
+            receiveAttack,
+            allShipsSunk,
+            isAttacked,
+        };
+    };
+
+    const setBoardMode = (mode) => {
+        if (!gridElement) return;
+    
+        // Remove all existing event listeners
+        gridElement.querySelectorAll('.grid-cell').forEach(cell => {
+            // Clone node to remove all event listeners
+            const newCell = cell.cloneNode(true);
+            cell.parentNode.replaceChild(newCell, cell);
+        });
+
+        // Add appropriate event listeners based on mode
+        gridElement.querySelectorAll('.grid-cell').forEach(cell => {
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+
+            if (mode === 'placement' && isPlayerBoard) {
+                cell.addEventListener('click', handleShipPlacement);
+                cell.addEventListener('mouseenter', handleCellHover);
+                cell.addEventListener('mouseleave', handleCellLeave);
+            } else if (mode === 'attack' && !isPlayerBoard) {
+                cell.addEventListener('click', handleCellClick);
+            }
+        });
     };
 
     const handleCellClick = (event) => {
@@ -265,5 +351,6 @@ export function Gameboard() {
         resetBoard,
         enableBoard,
         disableBoard,
+        setBoardMode,
     };
 }

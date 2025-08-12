@@ -11,6 +11,7 @@
 // 3. Game Over Phase
 
 import { Gameboard } from '../gameboard/gameboard.js';
+import { SHIP_TYPES } from '../../utils/constants.js';
 
 export function Game(player1, player2) {
     //-----------------------//
@@ -150,14 +151,9 @@ export function Game(player1, player2) {
                 <button id="rotate-ship"><span class="material-symbols-outlined">cached</span></button>
             </div>
             <div class="ship-inventory">
-                <h4>Available Ships</h4>
-                <ul id="ship-list">
-                    <li data-ship-type="carrier">Carrier (5)</li>
-                    <li data-ship-type="battleship">Battleship (4)</li>
-                    <li data-ship-type="cruiser">Cruiser (3)</li>
-                    <li data-ship-type="submarine">Submarine (3)</li>
-                    <li data-ship-type="destroyer">Destroyer (2)</li>
-                </ul>                
+                <h4>Select a ship to place</h4>
+                <div id="ship-list">
+                </div>             
             </div>
         `;
 
@@ -169,17 +165,162 @@ export function Game(player1, player2) {
         player1Board.createGrid('player1-board', true);
         player2Board.createGrid('player2-board', false);
 
+        // Create ship inventory
+        setupShipInventory();
+
         // Event listeners
         setupEventListeners();
         updateStatusDisplay();
     };
 
+    const setupShipInventory = () => {
+        const shipList = document.getElementById('ship-list');
+        if (!shipList) throw new Error('Ship list container not found');
+
+        Object.keys(SHIP_TYPES).forEach(typeKey => {
+            const shipType = SHIP_TYPES[typeKey];
+            const shipItem = document.createElement('div');
+            shipItem.classList.add('ship-item');
+            shipItem.dataset.type = typeKey;
+
+            const shipboxes = Array.from({ length: shipType.length }, () => {
+                return `<div class="ship-box" style="background-color: ${shipType.color}"></div>`;
+            }).join('');
+
+            shipItem.innerHTML = `
+                <p>${shipType.name}</p>
+                <div class="ship-boxes">${shipboxes}</div>
+            `;
+
+            shipItem.addEventListener('click', () => {
+                selectShipForPlacement(typeKey, shipType);
+            });
+
+            shipList.appendChild(shipItem);
+        });
+    };
+
+    let selectedShip = null;
+    let currentOrientation = 'horizontal';
+    let isPlacingShip = false;
+
+    const selectShipForPlacement = (typeKey, shipType) => {
+        // Deselect previously selected ship
+        document.querySelectorAll('.ship-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+
+        // Mark current selection
+        document.querySelector(`[data-type="${typeKey}"]`).classList.add('selected');
+        
+        // Set selected ship for placement
+        selectedShip =  { typeKey, ...shipType };
+        isPlacingShip = true;        
+    };
+
     const setupEventListeners = () => {
         document.addEventListener('boardAttack', handleBoardAttack);
+        document.addEventListener('boardHover', handleBoardHover);
+        document.addEventListener('boardLeave', handleBoardLeave);
+        document.addEventListener('shipPlacement', handleShipPlacement);
 
         document.getElementById('start-game').addEventListener('click', startGame);
         document.getElementById('reset-game').addEventListener('click', resetGame);
         document.getElementById('rotate-ship').addEventListener('click', rotateShip);
+    };
+
+    const handleBoardHover = (event) => {
+        if (!isPlacingShip || !selectedShip) return;
+
+        const { row, col, gameboard } = event.detail;
+
+        if (!isPlayerBoard(gameboard)) return;
+
+        showShipPreview(row, col, gameboard);
+    };
+
+    const handleBoardLeave = (event) => {
+        if (!isPlacingShip || !selectedShip) return;
+
+        const { gameboard } = event.detail;
+
+        if (!isPlayerBoard(gameboard)) return;
+
+        clearShipPreview(gameboard);
+    };
+
+    const handleShipPlacement = (event) => {
+        if (!isPlacingShip || !selectedShip) return;
+
+        const { row, col, gameboard } = event.detail;
+
+        if (!isPlayerBoard(gameboard)) return;
+
+        try {
+            import('../ship/ship.js').then(({ Ship }) => {
+                const ship = Ship(selectedShip.typeKey);
+                gameboard.placeShip(ship, row, col, currentOrientation);
+
+                clearShipPreview(gameboard);
+                document.querySelector(`[data-type="${selectedShip.typeKey}"]`).remove();
+
+                selectedShip = null;
+                isPlacingShip = false;
+            });
+        } catch (error) {
+            console.error('Error placing ship:', error);
+            updateStatusDisplay(error.message);
+            clearShipPreview(gameboard);
+        }
+    };
+
+    // Helper function to check if it's the player's board
+    const isPlayerBoard = (gameboard) => {
+        // Compare the gameboard methods to determine if it's player1Board
+        return gameboard === player1Board || 
+            (gameboard.getGridSize && gameboard.getGridSize() === player1Board.getGridSize());
+    };
+
+    const showShipPreview = (row, col, gameboard) => {
+        clearShipPreview(gameboard);
+
+        const coordinates = [];
+        let hasOverlap = false;
+
+        // Calculate ship coordinates based on orientation
+        for (let i = 0; i < selectedShip.length; i++) {
+            const x = currentOrientation === 'vertical' ? row + i : row;
+            const y = currentOrientation === 'horizontal' ? col + i : col;
+
+            coordinates.push({ x, y });
+
+            // Check if coordinates are valid and not overlapping
+            if (x >= 10 || y >= 10 || x < 0 || y < 0) hasOverlap = true;
+            else if (gameboard.getShipAt(x, y) !== null) hasOverlap = true;            
+        }
+
+        coordinates.forEach( ({ x, y }) => {
+            if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+                const cell = document.querySelector(`#player1-board [data-row="${x}"][data-col="${y}"]`);
+                if (cell) {
+                    cell.classList.add('ship-preview');
+                    if (hasOverlap) cell.classList.add('ship-preview-invalid');
+                    else {
+                        cell.style.backgroundColor = selectedShip.color;
+                        cell.style.opacity = '0.7';
+                    }
+                }
+            }
+        });
+    };
+
+    const clearShipPreview = (gameboard) => {
+        const previewCells = document.querySelectorAll('#player1-board .ship-preview');
+        previewCells.forEach(cell => {
+            cell.classList.remove('ship-preview', 'ship-preview-invalid');
+            cell.style.backgroundColor = '';
+            cell.style.opacity = '';
+        });
     };
 
     const handleBoardAttack = (event) => {
@@ -228,8 +369,11 @@ export function Game(player1, player2) {
         if (player2ScoreElement) player2ScoreElement.textContent = player2.score;
     };
 
-    const rotateShip = () => {
-        console.log('Rotate ship functionality not implemented yet');
+    const rotateShip = () => {        
+        if (!selectedShip) return;
+
+        currentOrientation = currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
+        console.log(`Ship orientation changed to: ${currentOrientation}`);
     };
 
     const updateBoardInteractivity = () => {

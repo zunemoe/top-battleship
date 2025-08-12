@@ -87,4 +87,50 @@
 
 .ship-inventory {
     grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#ship-list {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.ship-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid gray;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.ship-item:hover {
+    background-color: #f0f0f0;
+}
+
+.ship-item.selected {
+    border-color: #4a90e2;
+    background-color: #e0f7fa;
+}
+
+.ship-item.deployed {
+    background-color: #d0ffd0;
+    cursor: not-allowed;
+}
+
+.ship-boxes {
+    display: flex;
+    gap: 2px;
+}
+
+.ship-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
 }
