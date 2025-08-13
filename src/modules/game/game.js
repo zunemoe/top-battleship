@@ -11,6 +11,7 @@
 // 3. Game Over Phase
 
 import { Gameboard } from '../gameboard/gameboard.js';
+import { Ship } from '../ship/ship.js';
 import { SHIP_TYPES } from '../../utils/constants.js';
 
 export function Game(player1, player2) {
@@ -52,9 +53,21 @@ export function Game(player1, player2) {
     const getPlayer1Board = () => player1Board;
     const getPlayer2Board = () => player2Board;
 
+    const areAllShipsPlaced = () => {
+        const requiredShips = Object.keys(SHIP_TYPES);
+        const placedShips = document.querySelectorAll('.ship-item.placed');
+        return placedShips.length === requiredShips.length;
+    }
+
     const startGame = () => {
+        if (!areAllShipsPlaced()) {
+            updateStatusDisplay('Please place all ships before starting the game');
+            return;
+        }
+
         gameState = 'playing';
         currentPlayer = player1; // Player 1 starts
+        initializeComputerShips(); // Place computer ships if player2 is a computer
         updateStatusDisplay();
         updateScoreDisplay();
         updateBoardInteractivity();
@@ -95,19 +108,141 @@ export function Game(player1, player2) {
     };
 
     const resetGame = () => {
+        // Reset game state
         gameState = 'not playing';
         winner = null;
         currentPlayer = player1;
         turnCount = 0;
+
         // Reset gameboards
         if (player1Board.resetBoard) player1Board.resetBoard();
         if (player2Board.resetBoard) player2Board.resetBoard();
+
+        // Reset ship placement state
+        selectedShip = null;
+        isPlacingShip = false;
+        currentOrientation = 'horizontal';
+
+        // Reset player scores
+        player1.resetScore();
+        player2.resetScore();
+
+        resetShipInventory();
 
         if (gameContainer) {
             gameContainer.innerHTML = '';
             initializeGameUI('game-container');
         }
+
+        // Update displays
+        updateStatusDisplay();
+        updateScoreDisplay();
+        updateBoardInteractivity();
     }
+
+    const shuffleShips = () => {
+        if (gameState !== 'not playing') return;
+
+        player1Board.resetBoard();
+        resetShipInventory();
+        placeShipsRandomly(player1Board);
+        player1Board.updateDisplay();
+        markAllShipsAsPlaced();
+    }
+
+    const isValidShipPlacement = (gameboard, ship, x, y, orientation) => {
+        const shipLength = ship.length;
+
+        for (let i = -1; i <= shipLength; i++) {
+            for (let j = -1; j <= 1; j++) {
+                let checkX, checkY;
+
+                if (orientation === 'horizontal') {
+                    checkX = x + j;
+                    checkY = y + i;
+                } else {
+                    checkX = x + i;
+                    checkY = y + j;
+                }
+
+                if (checkX < 0 || checkX >= 10 || checkY < 0 || checkY >= 10) continue;
+
+                if (orientation === 'horizontal' && i >= 0 && i < shipLength && j === 0) {
+                    if (checkY < 0 || checkY >= 10) return false;
+                } else if (orientation === 'vertical' && j === 0 && i >= 0 && i < shipLength) {
+                    // This is a cell the ship will occupy - just check bounds  
+                    if (checkX < 0 || checkX >= 10) return false;
+                } else {
+                    // This is an adjacent cell - check if it has a ship
+                    if (gameboard.getShipAt(checkX, checkY) !== null) return false; // Adjacent ship found
+                }
+            }
+        }   
+        
+        return true;
+    };
+
+    const placeShipsRandomly = (gameboard) => {
+        const shipTypes = Object.keys(SHIP_TYPES);
+
+        shipTypes.forEach(typeKey => {
+            let placed = false;
+            
+            while (!placed) {
+                const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+                const row = Math.floor(Math.random() * gameboard.getGridSize());
+                const col = Math.floor(Math.random() * gameboard.getGridSize());
+
+                try {
+                    const ship = Ship(typeKey);
+                    if (isValidShipPlacement(gameboard, ship, row, col, orientation)) {
+                        gameboard.placeShip(ship, row, col, orientation);
+                        placed = true;                    
+                    }                    
+                } catch (error) {
+                    // console.error(`Error placing ship ${shipType.name}:`, error);
+                }
+            }
+
+            if (!placed) {
+                let fallbackPlaced = false;
+
+                while (!fallbackPlaced) {
+                    const orientation = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+                    const row = Math.floor(Math.random() * gameboard.getGridSize());
+                    const col = Math.floor(Math.random() * gameboard.getGridSize());
+
+                    try {
+                        const ship = Ship(typeKey);
+                        gameboard.placeShip(ship, row, col, orientation);
+                        fallbackPlaced = true;
+                    } catch (error) {
+
+                    }
+                }
+            }
+        });
+    };
+
+    const resetShipInventory = () => {
+        document.querySelectorAll('.ship-item').forEach(item => {
+            item.classList.remove('selected', 'placed');
+        });
+        selectedShip = null;
+        isPlacingShip = false;
+    };
+
+    const markAllShipsAsPlaced = () => {
+        document.querySelectorAll('.ship-item').forEach(item => {
+            item.classList.add('placed');
+        });
+    };
+
+    const initializeComputerShips = () => {
+        player2Board.resetBoard();
+        placeShipsRandomly(player2Board);
+        console.log('Computer ships placed randomly');
+    };
 
     //-----------------------//
     // Game DOM Manipulation
@@ -148,6 +283,7 @@ export function Game(player1, player2) {
             <div class="game-controls">
                 <button id="start-game"><span class="material-symbols-outlined">play_arrow</span></button>
                 <button id="reset-game"><span class="material-symbols-outlined">laps</span></button>
+                <button id="shuffle-ships"><span class="material-symbols-outlined">shuffle</span></button>
                 <button id="rotate-ship"><span class="material-symbols-outlined">cached</span></button>
             </div>
             <div class="ship-inventory">
@@ -226,6 +362,7 @@ export function Game(player1, player2) {
 
         document.getElementById('start-game').addEventListener('click', startGame);
         document.getElementById('reset-game').addEventListener('click', resetGame);
+        document.getElementById('shuffle-ships').addEventListener('click', shuffleShips);
         document.getElementById('rotate-ship').addEventListener('click', rotateShip);
     };
 
@@ -257,16 +394,18 @@ export function Game(player1, player2) {
         if (!isPlayerBoard(gameboard)) return;
 
         try {
-            import('../ship/ship.js').then(({ Ship }) => {
-                const ship = Ship(selectedShip.typeKey);
-                gameboard.placeShip(ship, row, col, currentOrientation);
+            const ship = Ship(selectedShip.typeKey);
+            gameboard.placeShip(ship, row, col, currentOrientation);
 
-                clearShipPreview(gameboard);
-                document.querySelector(`[data-type="${selectedShip.typeKey}"]`).remove();
+            clearShipPreview(gameboard);
+            const shipElement = document.querySelector(`[data-type="${selectedShip.typeKey}"]`);
+            if (shipElement) {
+                shipElement.classList.add('placed');                
+            }
 
-                selectedShip = null;
-                isPlacingShip = false;
-            });
+            selectedShip = null;
+            isPlacingShip = false;
+            player1Board.updateDisplay();
         } catch (error) {
             console.error('Error placing ship:', error);
             updateStatusDisplay(error.message);
@@ -321,6 +460,7 @@ export function Game(player1, player2) {
             cell.style.backgroundColor = '';
             cell.style.opacity = '';
         });
+        player1Board.updateDisplay();
     };
 
     const handleBoardAttack = (event) => {
@@ -338,12 +478,24 @@ export function Game(player1, player2) {
 
         try {
             const result = makeGameAttack(row, col);
+
+            if (winner) {
+                updateStatusDisplay();
+                return;
+            }
+
             updateStatusDisplay(`${getGameState().currentPlayer.name} ${result}!`);
             updateScoreDisplay();
 
             if (getGameState().currentPlayer.type === 'computer' && gameState === 'playing') {
                 setTimeout(() => {
                     const computerResult = generateComputerAttack();
+                    
+                    if (winner) {
+                        updateStatusDisplay();
+                        return;
+                    }
+
                     updateStatusDisplay(`Computer ${computerResult}!`);
                     updateScoreDisplay();
                 }, 1000);
@@ -358,9 +510,9 @@ export function Game(player1, player2) {
 
         if (message) statusElement.textContent = message;
         else {
-            if (gameState === 'not playing' && winner) statusElement.textContent = `${winner.name} wins!`; 
+            if (winner) statusElement.textContent = `🎉 ${winner.name} wins! 🎉`;
             else if (gameState === 'playing') statusElement.textContent = `${getGameState().currentPlayer.name}'s turn`;
-            else statusElement.textContent = 'Place your ships to start the game';
+            else statusElement.textContent = 'Place your ships to start the game';                                    
         }
     };
 
@@ -370,8 +522,6 @@ export function Game(player1, player2) {
     };
 
     const rotateShip = () => {        
-        if (!selectedShip) return;
-
         currentOrientation = currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
         console.log(`Ship orientation changed to: ${currentOrientation}`);
     };

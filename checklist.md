@@ -63,9 +63,9 @@ A step-by-step development roadmap using TDD, modular architecture, and Webpack.
 
 ## Misc
 
-- [ ] Import global styles in `index.js`
-- [ ] Hook up DOM elements to JS modules
-- [ ] Add favicon and title to HTML
+- [x] Import global styles in `index.js`
+- [x] Hook up DOM elements to JS modules
+- [x] Add favicon and title to HTML
 - [ ] Configure deployment (optional)
 
 ---
@@ -75,4 +75,4 @@ A step-by-step development roadmap using TDD, modular architecture, and Webpack.
 - [ ] Polish UI and responsiveness
 - [ ] Final testing
 - [ ] Code cleanup
-- [ ] Write README with architecture and instructions
+- [x] Write README with architecture and instructions

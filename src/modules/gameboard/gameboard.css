@@ -23,7 +23,7 @@
     transition: background-color 0.3s ease;
 }
 
-#player1-board .grid-cell.has-ship.ship-carrier {
+/* #player1-board .grid-cell.has-ship.ship-carrier {
     background-color: var(--color-red);
 }
 
@@ -45,14 +45,24 @@
 
 .grid-cell.hit {
     background-color: var(--color-red);
-}
+} */
 
 .grid-cell.miss {
     background-color: lightblue;
 }
 
-.grid-cell.sunk {
+/* .grid-cell.sunk {
     border: 3px solid #222 !important;
+} */
+
+.ship-preview {
+    opacity: 0.7 !important;
+    border: 1px dashed #333;
+}
+
+.ship-preview-invalid {
+    background-color: lightgray !important;
+    opacity: 0.7;
 }
 
 /* 

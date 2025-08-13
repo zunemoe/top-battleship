@@ -69,24 +69,21 @@ export function Gameboard() {
         if (attackedCoordinates.has(coordKey)) return 'already attacked';
 
         // Mark as attacked
-        attackedCoordinates.add(coordKey);
-        updateDisplay();
+        attackedCoordinates.add(coordKey);        
 
         // Check if hit
         const ship = grid[x][y];
         if (ship === null) {
-            
+            updateDisplay();
             return 'miss';
         } 
 
         // Hit the ship
         ship.hit();
+        updateDisplay();
 
         // Check if sunk
-        if (ship.isSunk()) {
-            return 'sunk';
-        }
-        
+        if (ship.isSunk()) return 'sunk';        
         return 'hit';
     };
 
@@ -243,7 +240,7 @@ export function Gameboard() {
                 // Clear previous content
                 cell.classList.add('grid-cell');
                 cell.style.backgroundColor = '';
-                cell.textContent = '';
+                cell.innerHTML = '';
 
                 const ship = grid[row][col];
                 const attacked = isAttacked(row, col);
@@ -252,40 +249,23 @@ export function Gameboard() {
                 if (isPlayerBoard && ship) {
                     cell.classList.add('has-ship');
                     cell.style.backgroundColor = ship.color;
-
-                    // const shipType = grid[row][col].type;
-                    // if (shipType) {
-                    //     cell.classList.add(`ship-${shipType}`);
-                    // }
                 }
 
                 if (attacked) {
                     if (ship) {
                         cell.classList.add('hit');
-                        cell.textContent = 'X';
+                        
 
                         if (!isPlayerBoard) cell.style.backgroundColor = ship.color;
 
                         if (ship.isSunk()) {
                             cell.classList.add('sunk');
-                            cell.style.border = '3px solid #222'; // Highlight sunk ships
-                        }
+                            cell.innerHTML = '<span class="material-symbols-outlined">mode_heat</span>';
+                        } else cell.innerHTML = '<span class="material-symbols-outlined">close_small</span>';
                     } else cell.classList.add('miss');
                 } else {
                     if (!isPlayerBoard) cell.style.backgroundColor = '';
                 }
-
-                // // Show attack results
-                // if (isAttacked(row, col)) {
-                //     if (grid[row][col] !== null) {
-                //         cell.classList.add('hit');
-
-                //         // Check if ship is sunk
-                //         if (grid[row][col].isSunk()) cell.classList.add('sunk');
-                //     } else {
-                //         cell.classList.add('miss');
-                //     }
-                // }
             }
         }
     };

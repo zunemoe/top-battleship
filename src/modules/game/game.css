@@ -119,9 +119,11 @@
     background-color: #e0f7fa;
 }
 
-.ship-item.deployed {
+.ship-item.placed {
     background-color: #d0ffd0;
+    opacity: 0.5;
     cursor: not-allowed;
+    pointer-events: none;
 }
 
 .ship-boxes {
