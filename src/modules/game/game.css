@@ -1,17 +1,30 @@
 #game-container {
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto auto 1fr auto;
+}
+
+.game-title {
+    grid-column: span 2;
+    text-align: center;
+    padding: var(--spacing-l);
+    font-size: var(--font-size-xl);
+    color: var(--color-blue-dark);
+    background-color: var(--color-off-white);
+}
+
+.game-title .material-symbols-outlined {
+    color: var(--color-red);
+    font-size: var(--font-size-l);
 }
 
 .game-header {
     grid-column: span 2;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0;
-    border-bottom: 2px solid #333;
+    padding: var(--spacing-m);
+    background-color: var(--color-off-white);
 }
 
 .player-info {
@@ -19,29 +32,30 @@
 }
 
 .player-info h3 {
-    margin: 0 0 10px 0;
-    color: #333;
+    font-size: var(--font-size-m);
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--color-blue-dark);
 }
 
 .score {
     font-size: 1.5em;
-    color: #4a90e2;
+    color: var(--color-blue-dark);
 }
 
 .game-status {
-    font-size: 1.2em;
+    font-size: var(--font-size-s);
     text-align: center;
-    padding: 10px 20px;
-    background-color: #4a90e2;
-    color: white;
+    padding: var(--spacing-s) var(--spacing-m);
+    background-color: var(--color-blue-light);
+    color: var(--color-white);
     border-radius: 5px;
 }
 
 .game-boards {
     display: flex;
     justify-content: space-evenly;
-    padding: 20px;
-    gap: 40px;
+    padding: var(--spacing-l);
+    gap: var(--spacing-l);
 }
 
 .board-container {
@@ -51,7 +65,8 @@
 }
 
 .board-container h4 {
-    margin-bottom: 15px;
+    font-size: var(--font-size-m);
+    margin-bottom: var(--spacing-s);
     color: #333;
 }
 
@@ -60,14 +75,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: var(--spacing-s);
     text-align: center;
-    padding: 20px;
+    padding: var(--spacing-m);
 }
 
 .game-controls button {
-    margin: 0 10px;
-    padding: 10px 20px;
+    margin: 0 var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-m);
     font-size: 1em;
     background-color: #4a90e2;
     color: white;
@@ -90,6 +105,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    border-top: 2px solid var(--color-off-white);
+    padding: var(--spacing-m);
+    gap: var(--spacing-s);
+    font-size: var(--font-size-s);
 }
 
 #ship-list {
@@ -104,23 +123,22 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 2px solid gray;
+    border: 1px solid var(--color-black);
     border-radius: 5px;
     cursor: pointer;
-    padding: 10px;
+    padding: var(--spacing-xs) var(--spacing-m);
+    gap: var(--spacing-xs);
 }
 
 .ship-item:hover {
-    background-color: #f0f0f0;
+    background-color: var(--color-off-white);
 }
 
 .ship-item.selected {
-    border-color: #4a90e2;
-    background-color: #e0f7fa;
+    background-color: var(--color-off-white);
 }
 
 .ship-item.placed {
-    background-color: #d0ffd0;
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
@@ -132,7 +150,7 @@
 }
 
 .ship-box {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     border-radius: 3px;
 }

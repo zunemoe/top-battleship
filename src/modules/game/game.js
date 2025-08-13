@@ -259,6 +259,7 @@ export function Game(player1, player2) {
 
         // Create game layout
         gameContainer.innerHTML = `
+            <h1 class="game-title">Battlesh<span class="material-symbols-outlined">anchor</span>p</h1>
             <div class="game-header">
                 <div class="player-info">
                     <h3>${player1.name}</h3>

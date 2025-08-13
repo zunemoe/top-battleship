@@ -2,7 +2,7 @@
 
 @import 'variables.css';
 
-h1, h2, h3 {
+h1 {
     font-family: var(--font-family-primary);
 }
 

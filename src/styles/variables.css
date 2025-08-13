@@ -6,13 +6,14 @@
     --color-blue-light: #118AB2;
     --color-blue-dark: #073B4C;
     --color-white: #ffffff;
+    --color-off-white: #f0f0f0;
     --color-black: #000000;
 
     /* Font Variables */
     --font-family-primary: 'Playfair Display', serif;
     --font-family-secondary: 'Inter', sans-serif;
-    --font-size-xl: 36px;
-    --font-size-l: 30px;
+    --font-size-xl: 48px;
+    --font-size-l: 36px;
     --font-size-m: 24px;
     --font-size-s: 16px;
     --font-size-xs: 14px;
@@ -28,8 +29,6 @@
     --spacing-m: 24px;
     --spacing-s: 16px;
     --spacing-xs: 8px;
-
-    /* Z-Index Layers */
 
     /* Interaction / States */
     --transition-fast: all 0.2s ease-in-out;
