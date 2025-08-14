@@ -2,6 +2,11 @@
 
 @import 'variables.css';
 
+body {
+    display: flex;
+    justify-content: center;
+}
+
 h1 {
     font-family: var(--font-family-primary);
 }
