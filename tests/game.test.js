@@ -11,6 +11,14 @@ describe('Game Factory:', () => {
   let player2;
 
   beforeEach(() => {
+    document.body.innerHTML = `
+        <div class="ship-item placed" data-type="carrier"></div>
+        <div class="ship-item placed" data-type="battleship"></div>
+        <div class="ship-item placed" data-type="cruiser"></div>
+        <div class="ship-item placed" data-type="submarine"></div>
+        <div class="ship-item placed" data-type="destroyer"></div>        
+    `;
+
     player1 = Player('Player 1', 'human');
     player2 = Player('Player 2', 'computer');
     game = Game(player1, player2);
@@ -35,7 +43,7 @@ describe('Game Factory:', () => {
   });
 
   describe('Ship Placement:', () => {
-    test('allows placing shps on player gameboards', () => {
+    test('allows placing ships on player gameboards', () => {
       const ship = Ship('cruiser');
 
       expect(() => game.getPlayer1Board().placeShip(ship, 0, 0, 'horizontal')).not.toThrow();
@@ -58,18 +66,19 @@ describe('Game Factory:', () => {
     });
   });
 
-  describe('Turn Management:', () => {
+  describe("Turn Management:", () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
+
+      game.getPlayer1Board().placeShip(Ship("cruiser"), 0, 0, "horizontal");
+      game.getPlayer2Board().placeShip(Ship("cruiser"), 0, 0, "horizontal");
 
       game.startGame();
     });
 
-    test('switches turns after valid attack', () => {
+    test("switches turns after valid attack", () => {
       expect(game.getGameState().currentPlayer).toBe(game.getPlayer1());
-      
+
       game.makeGameAttack(0, 0);
       expect(game.getGameState().currentPlayer).toBe(game.getPlayer2());
 
@@ -77,13 +86,15 @@ describe('Game Factory:', () => {
       expect(game.getGameState().currentPlayer).toBe(game.getPlayer1());
     });
 
-    test('does not switch turn after invalid attack', () => {
+    test("does not switch turn after invalid attack", () => {
       expect(game.getGameState().currentPlayer).toBe(game.getPlayer1());
 
       game.makeGameAttack(0, 0);
       expect(game.getGameState().currentPlayer).toBe(game.getPlayer2());
 
-      expect(() => game.makeGameAttack(10, 10)).toThrow('Attack coordinates out of bounds');
+      expect(() => game.makeGameAttack(10, 10)).toThrow(
+        "Attack coordinates out of bounds"
+      );
       expect(game.getGameState().currentPlayer).toBe(game.getPlayer2()); // Should still be player 2
     });
   });
@@ -91,15 +102,14 @@ describe('Game Factory:', () => {
   describe('Attack Coordination:', () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
-
+      const ship = Ship('cruiser');
       game.startGame();
+      game.getPlayer2Board().resetBoard();
+      expect(() => game.getPlayer2Board().placeShip(ship, 0, 0, 'horizontal')).not.toThrow();
     });
 
     test('processes attack on opponent gameboard', () => {
       const result = game.makeGameAttack(0, 0);
-
       expect(result).toBe('hit');
       expect(game.getPlayer2Board().isAttacked(0, 0)).toBe(true);
     });
@@ -114,10 +124,10 @@ describe('Game Factory:', () => {
   describe('Win Conditions:', () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship('destroyer'), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship('destroyer'), 0, 0, 'horizontal');
-
+      const ship = Ship('destroyer');
       game.startGame();
+      game.getPlayer2Board().resetBoard();
+      expect(() => game.getPlayer2Board().placeShip(ship, 0, 0, 'horizontal')).not.toThrow();
     });
 
     test('detects when all ships are sunk', () => {
