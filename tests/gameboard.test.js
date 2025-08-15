@@ -24,7 +24,7 @@ describe('Gameboard Factory:', () => {
 
   describe('Ship Placement:', () => {
     test('places ship horizontally', () => {
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
 
       expect(gameboard.getShipAt(0, 0)).toBe(ship);
@@ -34,7 +34,7 @@ describe('Gameboard Factory:', () => {
     });
 
     test('places ship vertically', () => {
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'vertical');
 
       expect(gameboard.getShipAt(0, 0)).toBe(ship);
@@ -44,14 +44,14 @@ describe('Gameboard Factory:', () => {
     });
 
     test('prevents ship placement out of bounds', () => {
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       expect(() => gameboard.placeShip(ship, 8, 8, 'horizontal')).toThrow('Ship placement out of bounds');
       expect(() => gameboard.placeShip(ship, 8, 8, 'vertical')).toThrow('Ship placement out of bounds');
     });
 
     test('prevents overlapping ship placement', () => {
-      const ship1 = Ship(3);
-      const ship2 = Ship(3);
+      const ship1 = Ship('cruiser');
+      const ship2 = Ship('submarine');
       gameboard.placeShip(ship1, 0, 0, 'horizontal');
       expect(() => gameboard.placeShip(ship2, 0, 0, 'vertical')).toThrow('Ships cannot overlap');
     });
@@ -63,13 +63,13 @@ describe('Gameboard Factory:', () => {
     });
 
     test('returns hit for attacking a ship', () => {
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       expect(gameboard.receiveAttack(0, 1)).toBe('hit');
     });
 
     test('returns sunk when ship is destroyed', () => {
-      const ship = Ship(2);
+      const ship = Ship('destroyer');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       gameboard.receiveAttack(0, 0);
       expect(gameboard.receiveAttack(0, 1)).toBe('sunk');
@@ -77,7 +77,7 @@ describe('Gameboard Factory:', () => {
     });
 
     test('prevents duplicate attacks', () => {
-      const ship = Ship(2);
+      const ship = Ship('destroyer');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       gameboard.receiveAttack(0, 0);
       expect(gameboard.receiveAttack(0, 0)).toBe('already attacked');
@@ -91,16 +91,16 @@ describe('Gameboard Factory:', () => {
 
   describe('Game State', () => {
     test('reports not all ships sunk initially', () => {
-      const ship1 = Ship(2);
-      const ship2 = Ship(3);
+      const ship1 = Ship('destroyer');
+      const ship2 = Ship('cruiser');
       gameboard.placeShip(ship1, 0, 0, 'horizontal');
       gameboard.placeShip(ship2, 1, 1, 'vertical');
       expect(gameboard.allShipsSunk()).toBe(false);
     });
 
     test('reports all ships sunk when all ships are destroyed', () => {
-      const ship1 = Ship(2);
-      const ship2 = Ship(2);
+      const ship1 = Ship('destroyer');
+      const ship2 = Ship('destroyer');
       gameboard.placeShip(ship1, 0, 0, 'horizontal');
       gameboard.placeShip(ship2, 1, 1, 'vertical');
       gameboard.receiveAttack(0, 0);

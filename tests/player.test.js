@@ -39,7 +39,7 @@ describe('Player Factory:', () => {
 
     test('increments score on successful hit', () => {
       const player = Player('Alice', 'human');
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       const attackResult = player.makeAttack(0, 0, gameboard);
 
@@ -49,7 +49,7 @@ describe('Player Factory:', () => {
 
     test('does not increment score on miss', () => {
       const player = Player('Alice', 'human');
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       const attackResult = player.makeAttack(1, 1, gameboard);
 
@@ -79,7 +79,7 @@ describe('Player Factory:', () => {
 
     test('increments score on successful hit', () => {
       const player = Player('Computer', 'computer');
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       
       const result = player.makeAttack(0, 0, gameboard);
@@ -89,7 +89,7 @@ describe('Player Factory:', () => {
 
     test('does not increment score on miss', () => {
       const player = Player('Computer', 'computer');
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 0, 0, 'horizontal');
       
       const result = player.makeAttack(1, 1, gameboard);
@@ -101,7 +101,7 @@ describe('Player Factory:', () => {
   describe('Computer Smart Targeting:', () => {
     test('targets surrounding cells after a hit', () => {
       const player = Player('Computer', 'computer');
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 5, 5, 'horizontal');
 
       player.makeAttack(5, 5, gameboard); // First hit
@@ -121,7 +121,7 @@ describe('Player Factory:', () => {
 
     test('continues hunting along line after second hit', () => {
       const player = Player('Computer', 'computer');
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
       gameboard.placeShip(ship, 5, 5, 'horizontal');
 
       player.makeAttack(5, 5, gameboard); // First hit
@@ -135,7 +135,7 @@ describe('Player Factory:', () => {
 
     test('switches to random targeting after sinking a ship', () => {
       const player = Player('Computer', 'computer');
-      const ship = Ship(2);
+      const ship = Ship('destroyer');
       gameboard.placeShip(ship, 5, 5, 'horizontal');
 
       // Sink the ship completely

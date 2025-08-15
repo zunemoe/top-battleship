@@ -32,27 +32,26 @@ describe('Game Factory:', () => {
     test('sets player 1 as the starting player', () => {
       expect(game.getGameState().currentPlayer).toBe(player1);
     });
-
-    // test('initializes game state as active', () => {
-    //   expect(game.isGameOver()).toBe(false);
-    //   expect(game.getWinner()).toBeNull();
-    // });
   });
 
   describe('Ship Placement:', () => {
     test('allows placing shps on player gameboards', () => {
-      const ship = Ship(3);
+      const ship = Ship('cruiser');
 
       expect(() => game.getPlayer1Board().placeShip(ship, 0, 0, 'horizontal')).not.toThrow();
       expect(game.getPlayer1Board().getShipAt(0, 0)).toBe(ship);
     });
 
     test('tracks setup completion for both players', () => {
-      const ships1 = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)];
-      const ships2 = [Ship(5), Ship(4), Ship(3), Ship(3), Ship(2)];
+      const ships1 = [Ship('carrier'), Ship('battleship'), Ship('cruiser'), Ship('submarine'), Ship('destroyer')];
+      const ships2 = [Ship('carrier'), Ship('battleship'), Ship('cruiser'), Ship('submarine'), Ship('destroyer')];
 
-      ships1.forEach((ship, i) => game.getPlayer1Board().placeShip(ship, i, 0, 'horizontal'));
-      ships2.forEach((ship, i) => game.getPlayer2Board().placeShip(ship, i, 0, 'horizontal'));
+      const positions = [
+        [0, 0], [2, 0], [4, 0], [6, 0], [8, 0]
+      ];
+
+      ships1.forEach((ship, i) => game.getPlayer1Board().placeShip(ship, positions[i][0], positions[i][1], 'horizontal'));
+      ships2.forEach((ship, i) => game.getPlayer2Board().placeShip(ship, positions[i][0], positions[i][1], 'horizontal'));
 
       game.startGame();
       expect(game.getGameState().gameState).toBe('playing');
@@ -62,8 +61,8 @@ describe('Game Factory:', () => {
   describe('Turn Management:', () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship(3), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship(3), 0, 0, 'horizontal');
+      game.getPlayer1Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
 
       game.startGame();
     });
@@ -92,8 +91,8 @@ describe('Game Factory:', () => {
   describe('Attack Coordination:', () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship(3), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship(3), 0, 0, 'horizontal');
+      game.getPlayer1Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship('cruiser'), 0, 0, 'horizontal');
 
       game.startGame();
     });
@@ -115,8 +114,8 @@ describe('Game Factory:', () => {
   describe('Win Conditions:', () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship(2), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship(2), 0, 0, 'horizontal');
+      game.getPlayer1Board().placeShip(Ship('destroyer'), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship('destroyer'), 0, 0, 'horizontal');
 
       game.startGame();
     });
@@ -145,8 +144,8 @@ describe('Game Factory:', () => {
   describe('Game State Management:', () => {
     beforeEach(() => {
       // Set up game with ships
-      game.getPlayer1Board().placeShip(Ship(2), 0, 0, 'horizontal');
-      game.getPlayer2Board().placeShip(Ship(2), 0, 0, 'horizontal');
+      game.getPlayer1Board().placeShip(Ship('destroyer'), 0, 0, 'horizontal');
+      game.getPlayer2Board().placeShip(Ship('destroyer'), 0, 0, 'horizontal');
 
       game.startGame();
     });
