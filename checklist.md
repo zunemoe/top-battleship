@@ -73,6 +73,6 @@ A step-by-step development roadmap using TDD, modular architecture, and Webpack.
 ## Final Tasks
 
 - [x] Polish UI
-- [ ] Final testing
-- [ ] Code cleanup
+- [x] Final testing
+- [x] Code cleanup
 - [x] Write README with architecture and instructions

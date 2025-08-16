@@ -15,10 +15,6 @@ body, p, span, div {
     font-family: var(--font-family-secondary);
 }
 
-@import 'layout.css';
-
 @import '../modules/game/game.css';
 @import '../modules/ship/ship.css';
 @import '../modules/gameboard/gameboard.css';
-
-@import 'responsive.css';
