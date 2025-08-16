@@ -9,8 +9,11 @@
     "test:verbose": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --verbose --no-coverage",
     "watch": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --no-coverage",
     "watch:verbose": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --watch --verbose",
-    "build": "webpack",
-    "start": "webpack serve --open"
+    "start": "webpack serve --open",
+    "build:dev": "npx webpack --mode=development",
+    "build:prod": "npx webpack --env production --mode=production",
+    "deploy": "npm run build:prod && npx gh-pages -d dist -o origin",
+    "deploy:clean": "npm run build:prod && npx gh-pages -d dist -f -o origin"
   },
   "repository": {
     "type": "git",
